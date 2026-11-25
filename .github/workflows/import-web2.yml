@@ -1,0 +1,19 @@
+name: Import web2 project
+on:
+  push:
+    branches: [main]
+    paths: [.github/workflows/import-web2.yml]
+permissions:
+  contents: write
+jobs:
+  import:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - name: Restore and publish the verified local commit
+        shell: bash
+        run: |
+          git bundle verify ./web2-820ff20.bundle
+          git fetch ./web2-820ff20.bundle refs/heads/main:refs/web2-import/main
+          test "$(git rev-parse refs/web2-import/main)" = 820ff20843aaa1f33f57b48bc0914f0cf1c0aebd
+          git push origin refs/web2-import/main:refs/heads/app
